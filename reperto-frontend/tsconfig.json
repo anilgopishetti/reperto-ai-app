@@ -1,14 +1,12 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "strict": true,
-    "jsx": "react",
-    "moduleResolution": "node",
+    "jsx": "react-native",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "noEmit": true
+    "skipLibCheck": true,
+    "noEmit": true,
+    "strict": false
   }
 }
