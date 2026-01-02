@@ -1,18 +1,19 @@
-Reperto AI - Minimal MVP (Frontend + Backend)
+Reperto AI
 
 Frontend (Expo React Native)
 ----------------------------
 1. Install Node / Yarn / Expo CLI
-2. cd reperto-frontend
+2. cd frontend
 3. npm install
 4. expo start
 
 Backend (FastAPI)
 -----------------
 1. Create python venv
+2. python -m venv venv / python -m venv venv 
 2. pip install -r requirements.txt
-3. Copy .env.example to .env and set OPENAI_API_KEY (optional)
-4. uvicorn main:app --reload --port 8000
+3. Copy .env.example to .env and set OPENAI_API_KEY 
+4. uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Notes
 -----
