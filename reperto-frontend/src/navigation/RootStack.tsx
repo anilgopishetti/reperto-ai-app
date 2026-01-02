@@ -5,8 +5,9 @@ import SignupScreen from '../screens/SignupScreen';
 import CaseListScreen from '../screens/CaseListScreen';
 import CaseEditScreen from '../screens/CaseEditScreen';
 import ReviewScreen from '../screens/ReviewScreen';
+import { RootStackParamList } from './types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootStack() {
   return (
