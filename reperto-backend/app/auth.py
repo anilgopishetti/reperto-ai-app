@@ -3,38 +3,37 @@ import os
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta
-from .database import database
-from .models import users
+from .database import USERS_DB  # Import in-memory store
 
-pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret")
+pwd_ctx = CryptContext(schemes=["argon2"], deprecated="auto")
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-prod")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 async def create_user(name: str, email: str, password: str):
-    # bcrypt hard limit: 72 bytes
-    password = password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
-
-    query = users.select().where(users.c.email == email)
-    existing = await database.fetch_one(query)
-    if existing:
+    # Check if user already exists
+    if email in USERS_DB:
         return False
 
+    # Truncate password to 72 bytes for bcrypt/argon2 compatibility
+    password = password[:72]
     hashed = pwd_ctx.hash(password)
-    insert_q = users.insert().values(
-        name=name,
-        email=email,
-        password_hash=hashed
-    )
-    await database.execute(insert_q)
+    
+    # Store in memory
+    USERS_DB[email] = {
+        "name": name,
+        "email": email,
+        "password_hash": hashed
+    }
     return True
 
 
 async def authenticate_user(email: str, password: str):
-    password = password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    # Truncate password to match creation
+    password = password[:72]
 
-    query = users.select().where(users.c.email == email)
-    user = await database.fetch_one(query)
+    # Retrieve from memory
+    user = USERS_DB.get(email)
     if not user:
         return None
 

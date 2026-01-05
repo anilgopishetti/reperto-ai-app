@@ -13,12 +13,21 @@ from .ai import parse_text_endpoint
 
 app = FastAPI(title="Reperto AI Backend")
 
+# CORS Configuration - Allow requests from frontend dev servers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # for dev only; restrict in prod
+    allow_origins=[
+        "http://localhost:8081",
+        "http://localhost:19006",
+        "http://127.0.0.1:8081",
+        "http://127.0.0.1:19006",
+        "http://10.0.2.2:8081",  # Android emulator
+        "*",  # Allow all for development
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 @app.on_event("startup")
