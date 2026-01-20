@@ -1,7 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = process.env.REACT_NATIVE_API_URL || "http://10.72.118.61:8000"; // IP Address
+const BASE_URL = process.env.REACT_NATIVE_API_URL || "http://localhost:8000"; // Local backend
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -23,7 +23,9 @@ export async function signup(name: string, email: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || 'Signup failed');
+  return data;
 }
 
 export async function login(email: string, password: string) {
@@ -32,9 +34,45 @@ export async function login(email: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || 'Login failed');
+  return data;
 }
+
+export async function getProfile() {
+  const res = await api.get("/auth/me");
+  return res.data;
+}
+
+export async function getCases() {
+  const res = await api.get("/cases");
+  return res.data;
+}
+
+export async function saveCase(caseData: { 
+  name: string; 
+  initials: string; 
+  specialty: string; 
+  time: string;
+  summary?: string;
+  rubrics?: string[];
+  remedies?: any[];
+}) {
+  const res = await api.post("/cases", caseData);
+  return res.data;
+}
+
 export async function parseText(text: string) {
   const res = await api.post("/ai/parse-text", { text });
+  return res.data;
+}
+
+export async function analyzeCDSS(text: string) {
+  const res = await api.post("/cdss/analyze", { text });
+  return res.data;
+}
+
+export async function scoreRubrics(rubricPaths: string[]) {
+  const res = await api.post("/cdss/score", { rubrics: rubricPaths });
   return res.data;
 }
